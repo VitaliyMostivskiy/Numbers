@@ -56,12 +56,14 @@ public class ClassificationActivity extends ActionBarActivity {
 
             }
         });
+
         classifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,7 +84,6 @@ public class ClassificationActivity extends ActionBarActivity {
             }
         });
 
-
         try {
             openFileOutput("", 1);
         } catch (FileNotFoundException e) {
@@ -91,30 +92,6 @@ public class ClassificationActivity extends ActionBarActivity {
 
     }
 
-    /* public void showAlertDialog(String title, String message) {
-          AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-          alertDialogBuilder.setTitle(title);
-          alertDialogBuilder
-                  .setMessage(message)
-                  .setCancelable(true)
-                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int id) {
-                          // if this button is clicked, close current activity
-                          dialog.dismiss();
-                      }
-                  });
-          // create alert dialog
-          AlertDialog alertDialog = alertDialogBuilder.create();
-          alertDialog.show();
-      }
-
-    /*  @Override
-      public boolean onCreateOptionsMenu(Menu menu) {
-          // Inflate the menu; this adds items to the action bar if it is present.
-          getMenuInflater().inflate(R.menu.menu_classification, menu);
-          return true;
-      }
-  */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
