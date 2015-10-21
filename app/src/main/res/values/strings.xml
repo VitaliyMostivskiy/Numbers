@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Numbers</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="train_data_file_name">trainData.txt</string>
+</resources>
