@@ -2,20 +2,28 @@ package com.mostivskyi.vitalii.numbers.Activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.mostivskyi.vitalii.numbers.Helpers.FileWriter;
+import com.mostivskyi.vitalii.numbers.Models.DataCollection;
 import com.mostivskyi.vitalii.numbers.Models.Features;
+import com.mostivskyi.vitalii.numbers.Models.NaiveBayes;
 import com.mostivskyi.vitalii.numbers.R;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
-
 public class ClassificationActivity extends ActionBarActivity {
+
+    private NaiveBayes nb;
 
     private DrawingView drawView;
     private Button cleanButton;
@@ -30,6 +38,8 @@ public class ClassificationActivity extends ActionBarActivity {
         setContentView(R.layout.activity_classification);
         setUpElements();
         setUpListeners();
+
+        nb = new NaiveBayes();
     }
 
     private void setUpElements() {
@@ -53,14 +63,50 @@ public class ClassificationActivity extends ActionBarActivity {
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    File file = ClassificationActivity.this.getFileStreamPath(getString(R.string.train_data_file_name));
 
+                    if (false == file.exists()) {
+                        new AlertDialog(ClassificationActivity.this, "Bład", "Brak pliku z danymi uczącymi")
+                                .show();
+                        return;
+                    }
+
+                    InputStream inputStream = openFileInput(getString(R.string.train_data_file_name));
+                    DataCollection data = new DataCollection();
+                    data.build(inputStream);
+
+                    if (data.getClassesCount() > 1) {
+                        nb.buildClassifier(data);
+
+                        new AlertDialog(ClassificationActivity.this, "Sukces", "Model został poprawnie wyuczony")
+                                .show();
+                    } else {
+                        new AlertDialog(ClassificationActivity.this, "Bład", "Narysuj co najmniej dwie różne cyfry aby wyuczyć model")
+                                .show();
+                    }
+
+                    inputStream.close();
+                } catch (Exception e) {
+                    Log.e("login activity", "Can not read file: " + e.toString());
+                }
             }
         });
 
         classifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (nb.isTrained())
+                {
+                    Features features = new Features(drawView.getPoints());
+                    double result = nb.classifyInstance(features);
+                    digitEditText.setText(Integer.toString((int) result));
+                }
+                else
+                {
+                    new AlertDialog(ClassificationActivity.this, "Bład", "Klasyfikator nie został wyuczony")
+                            .show();
+                }
             }
         });
 
@@ -89,7 +135,6 @@ public class ClassificationActivity extends ActionBarActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -108,5 +153,12 @@ public class ClassificationActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_classification, menu);
+        return true;
     }
 }
